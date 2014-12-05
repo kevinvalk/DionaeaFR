@@ -60,8 +60,22 @@
                         <li><a href="/graphs/malware"><i class="icon-signal"></i> Malware</a></li>
                         <li><a href="/graphs/connections"><i class="icon-signal"></i> Connections</a></li>
                         <li class="nav-header">Maps</li>
-                        <li><a href="/maps/attackers"><i class="icon-globe"></i> Attackers</a></li>
-                        <li><a href="/maps/countries"><i class="icon-globe"></i> Countries</a></li>
+                        <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-globe"></i> Attackers</a>
+                                <ul class="dropdown-menu">
+                                        <li><a href="/maps/attackers">All attackers</a></li>
+                                        <li><a href="/maps/attackers/4">IPv4 attackers</a></li>
+                                        <li><a href="/maps/attackers/6">IPv6 attackers</a></li>
+                                </ul>
+                        </li>
+                        <li class="dropdown">
+                                <a class="dropdown-toggle" data-toggle="dropdown" href="#"><i class="icon-globe"></i> Countries</a>
+                                <ul class="dropdown-menu">
+                                        <li><a href="/maps/countries">All countries</a></li>
+                                        <li><a href="/maps/countries/4">IPv4 countries</a></li>
+                                        <li><a href="/maps/countries/6">IPv6 countries</a></li>
+                                </ul>
+                        </li>
                     </ul>
                 </div>
                 {% block info %}

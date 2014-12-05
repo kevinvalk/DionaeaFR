@@ -110,12 +110,12 @@ urlpatterns = patterns(
         name='ips-countries'
     ),
     url(
-        r'^maps/attackers/$',
+        r'^maps/attackers/(?:(?P<version>[4|6])/)?$',
         attackersMap,
         name='attackers-map'
     ),
     url(
-        r'^maps/countries/$',
+        r'^maps/countries/(?:(?P<version>[4|6])/)?$',
         countriesMap,
         name='countries-map'
     ),

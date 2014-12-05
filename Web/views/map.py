@@ -28,8 +28,13 @@ gic6 = pygeoip.GeoIP(settings.GEOIP_CITY_IPV6, pygeoip.STANDARD)
 LAT_PATTERN = "{{latLng:[{:-f},{:-f}], count:'{}', host:'{}'}},"
 COUNTRY_PATTERN = '"{0}":{1},'
 
+# Regular expressions
+IPV6_PATTERN = "(([0-9a-fA-F]{1,4}:){7,7}[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,7}:|([0-9a-fA-F]{1,4}:){1,6}:[0-9a-fA-F]{1,4}|([0-9a-fA-F]{1,4}:){1,5}(:[0-9a-fA-F]{1,4}){1,2}|([0-9a-fA-F]{1,4}:){1,4}(:[0-9a-fA-F]{1,4}){1,3}|([0-9a-fA-F]{1,4}:){1,3}(:[0-9a-fA-F]{1,4}){1,4}|([0-9a-fA-F]{1,4}:){1,2}(:[0-9a-fA-F]{1,4}){1,5}|[0-9a-fA-F]{1,4}:((:[0-9a-fA-F]{1,4}){1,6})|:((:[0-9a-fA-F]{1,4}){1,7}|:)|fe80:(:[0-9a-fA-F]{0,4}){0,4}%[0-9a-zA-Z]{1,}|::(ffff(:0{1,4}){0,1}:){0,1}((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])|([0-9a-fA-F]{1,4}:){1,4}:((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9]))"
+IPV4_PATTERN = "((25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])\.){3,3}(25[0-5]|(2[0-4]|1{0,1}[0-9]){0,1}[0-9])"
+reipv4 = re.compile(IPV4_PATTERN)
+reipv6 = re.compile(IPV6_PATTERN)
 
-def countriesMap(request):
+def countriesMap(request, version):
     date_now = datetime.date.today() - datetime.timedelta(days=settings.RESULTS_DAYS)
     conn = Connection.objects.filter(
         connection_timestamp__gt=time.mktime(
@@ -40,21 +45,18 @@ def countriesMap(request):
     )
     data = {}
     for c in conn:
-        try:
-            ip = IPAddress(c['remote_host'])
-            if ip.version == 4:
-                cc = gi.country_code_by_addr(c['remote_host'])
-            elif ip.version == 6:
-                cc = gi6.country_code_by_addr(c['remote_host'])
+        if (version == None or version == '4') and (reipv4.match(c['remote_host']) is not None):
+            cc = gi.country_code_by_addr(c['remote_host'])
+        elif (version == None or version == '6') and (reipv6.match(c['remote_host']) is not None):
+            cc = gi6.country_code_by_addr(c['remote_host'])
+        else:
+            cc = ""
 
-            if cc != "":
-                try:
-                    data[cc] += 1
-                except:
-                    data[cc] = 1
-
-        except:
-            pass
+        if cc != "":
+            try:
+                data[cc] += 1
+            except:
+                data[cc] = 1
 
     var = "var gdpData = {"
     for country in data:
@@ -72,7 +74,7 @@ def countriesMap(request):
     )
 
 
-def attackersMap(request):
+def attackersMap(request, version):
     date_now = datetime.date.today() - datetime.timedelta(days=settings.RESULTS_DAYS)
     conn = Connection.objects.filter(
         connection_timestamp__gt=time.mktime(
@@ -84,32 +86,27 @@ def attackersMap(request):
     var = "var gdpData = ["
     counts = {}
     for c in conn:
-        try:
-            ip = IPAddress(c['remote_host'])
+        if ((version == None or version == '4') and reipv4.match(c['remote_host']) is not None) or ((version == None or version == '6') and reipv6.match(c['remote_host']) is not None):
             try:
                 counts[c['remote_host']] += 1
             except:
                 counts[c['remote_host']] = 1
-        except:
-            pass
 
     for c in counts:
-        try:
-            ip = IPAddress(c)
-            if ip.version == 4:
-                cc = gic.record_by_addr(c)
-            elif ip.version == 6:
-                cc = gic6.record_by_addr(c)
+        if (reipv4.match(c) is not None):
+            cc = gic.record_by_addr(c)
+        elif (reipv6.match(c) is not None):
+            cc = gic6.record_by_addr(c)
+        else:
+            cc = ""
 
-            if cc:
-                var = var + LAT_PATTERN.format(
-                    cc['latitude'],
-                    cc['longitude'],
-                    counts[c],
-                    str(c)
-                )
-        except:
-            pass
+        if cc:
+            var = var + LAT_PATTERN.format(
+                cc['latitude'],
+                cc['longitude'],
+                counts[c],
+                str(c)
+            )
 
     var = var.rstrip(',') + "];"
     return render_to_response(
