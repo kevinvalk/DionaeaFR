@@ -18,24 +18,18 @@ from netaddr import IPAddress
 try:
     import SubnetTree
 
-    reserved_ipv4 = SubnetTree.SubnetTree()
+    reserved_ip = SubnetTree.SubnetTree()
     for subnet in settings.RESERVED_IP:
-        reserved_ipv4[subnet] = subnet
+        reserved_ip[subnet] = subnet
 except ImportError:
-    reserved_ipv4 = dict()
+    reserved_ip = dict()
     print "Install SubnetTree"
     print "\tgit clone git://git.bro-ids.org/pysubnettree.git"
     print "\tpython setup.py install"
     pass
 
-gi = pygeoip.GeoIP(
-    os.path.join(
-        'DionaeaFR/static',
-        'GeoIP.dat'
-    ),
-    pygeoip.MEMORY_CACHE
-)
-
+gi = pygeoip.GeoIP(settings.GEOIP_COUNTRY_IPV4, pygeoip.MEMORY_CACHE)
+gi6 = pygeoip.GeoIP(settings.GEOIP_COUNTRY_IPV6, pygeoip.MEMORY_CACHE)
 
 class UnixToDate(tables.Column):
     def render(self, value):
@@ -43,22 +37,20 @@ class UnixToDate(tables.Column):
             float(value)
         ).strftime("%d-%m-%Y %H:%M:%S")
 
-
 class FormatIP(tables.Column):
     def render(self, value):
         cc = u'ZZ'
         name = u'Unknown'
         ip = IPAddress(str(value))
-        if ip.version == 4:
-            try:
-                reserved_ipv4[str(ip)]
-            except KeyError:
-                cc = gi.country_code_by_addr(
-                    str(ip)
-                )
-                name = gi.country_name_by_addr(
-                    str(ip)
-                )
+        try:
+            reserved_ip[str(ip)]
+        except KeyError:
+            if ip.version == 4:
+                cc = gi.country_code_by_addr(str(ip))
+                name = gi.country_name_by_addr(str(ip))
+            elif ip.version == 6:
+                cc = gi6.country_code_by_addr(str(ip))
+                name = gi6.country_name_by_addr(str(ip))
         if not cc or not name:
             cc = u'ZZ'
             name = u'Unknown'
@@ -72,6 +64,5 @@ class FormatIP(tables.Column):
             '" data-placement="top"/> ' +
             str(ip)
         )
-
 
 # vim: set expandtab:ts=4

@@ -1,33 +1,77 @@
-# Django settings for DionaeaFR project.
 import os
-
 CURRENT_PATH = os.path.abspath(os.path.dirname(__file__))
 
-DEBUG = True
-TEMPLATE_DEBUG = DEBUG
+######################
+# DionaeaFR settings #
+######################
+# Pid file location
+PID_PATH = '/var/run/dionaeafr.pid'
 
-ADMINS = (
-    # ('Your Name', 'your_email@example.com'),
-)
-
-MANAGERS = ADMINS
-
+# Database settings from Dionaea
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
+        'ENGINE': 'django.db.backends.sqlite3',   # Add 'postgresql_psycopg2', 'mysql', 'sqlite3' or 'oracle'.
         'NAME': '/var/lib/dionaea/logsql.sqlite',
-        'USER': '',  # Not used with sqlite3.
-        'PASSWORD': '',  # Not used with sqlite3.
-        'HOST': '',  # Set to empty string for localhost. Not used with sqlite3.
-        'PORT': '',  # Set to empty string for default. Not used with sqlite3.
+        'USER': '',                               # Not used with sqlite3.
+        'PASSWORD': '',                           # Not used with sqlite3.
+        'HOST': '',                               # Set to empty string for localhost. Not used with sqlite3.
+        'PORT': '',                               # Set to empty string for default. Not used with sqlite3.
     },
     'OPTIONS': {
         'timeout': 60,
     }
 }
 
+# GeoIP settings for IPv4 and IPv6 support
+# Databases can be downloaded from http://dev.maxmind.com/geoip/legacy/geolite/
+GEOIP_COUNTRY_IPV4 = os.path.join(CURRENT_PATH, 'DionaeaFR', 'static', 'GeoIP.dat')
+GEOIP_COUNTRY_IPV6 = os.path.join(CURRENT_PATH, 'DionaeaFR', 'static', 'GeoIPv6.dat')
+GEOIP_CITY_IPV4 = os.path.join(CURRENT_PATH, 'DionaeaFR', 'static', 'GeoLiteCity.dat')
+GEOIP_CITY_IPV6 = os.path.join(CURRENT_PATH, 'DionaeaFR', 'static', 'GeoLiteCityv6.dat')
+
 # How many days (going backwards) worth of results to show
-RESULTS_DAYS = 14 
+RESULTS_DAYS = 14
+
+# Virus scanner for virustotal
+ANTIVIRUS_VIRUSTOTAL = 'Sophos'
+
+# Filtered IP's can be given in IPv4 CIDR format or IPv6
+# Examples IPv4: 1.2.3.4/16, 127.0.0.0/8
+# Examples IPv6: ::ffff:0:0/96, 1:2::/32
+RESERVED_IP = (
+    '0.0.0.0/8',
+    '10.0.0.0/8',
+    '100.64.0.0/10',
+    '127.0.0.0/8',
+    '169.254.0.0/16',
+    '172.16.0.0/12',
+    '192.0.0.0/24',
+    '192.0.2.0/24',
+    '192.88.99.0/24',
+    '192.168.0.0/16',
+    '198.15.0.0/15',
+    '198.51.100.0/24',
+    '203.0.113.0/24',
+    '224.0.0.0/4',
+    '240.0.0.0/4',
+    '255.255.255.255/32'
+)
+
+###################
+# Django settings #
+###################
+# Debug modes
+DEBUG = True
+TEMPLATE_DEBUG = DEBUG
+
+# Admin settings
+MANAGERS = ADMINS
+ADMINS = (
+    # ('Your Name', 'your_email@example.com'),
+)
+
+# Make this unique, and don't share it with anybody.
+SECRET_KEY = 'o*w2sbrhS_LKSQwx_dmlslsdmcx,c,k!(el0^qx5dljbv6eyjwx)(76^wppdjrrxnj%wcny3h2r'
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name
@@ -43,6 +87,7 @@ TIME_ZONE = 'Etc/UTC'
 # http://www.i18nguy.com/unicode/language-identifiers.html
 LANGUAGE_CODE = 'en-us'
 
+# The ID, as an integer, of the current site in the django_site database table
 SITE_ID = 1
 
 # If you set this to False, Django will make some optimizations so as not
@@ -56,14 +101,20 @@ USE_L10N = True
 # If you set this to False, Django will not use timezone-aware datetimes.
 USE_TZ = True
 
+# A string representing the full Python import path to your root URLconf
+ROOT_URLCONF = 'DionaeaFR.urls'
+
+# Python dotted path to the WSGI application used by Django's runserver.
+WSGI_APPLICATION = 'DionaeaFR.wsgi.application'
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
-MEDIA_ROOT = os.path.join(CURRENT_PATH, 'media')
+#MEDIA_ROOT = os.path.join(CURRENT_PATH, 'media')
 
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = '/media/'
+#MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -88,14 +139,15 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'o*w2sbrhS_LKSQwx_dmlslsdmcx,c,k!(el0^qx5dljbv6eyjwx)(76^wppdjrrxnj%wcny3h2r'
-
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
     'django.template.loaders.app_directories.Loader',
     # 'django.template.loaders.eggs.Loader',
+)
+
+TEMPLATE_DIRS = (
+    os.path.join(CURRENT_PATH, 'Templates'),
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
@@ -105,7 +157,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'Web.context_processors.expose_extra_settings_keys',
 )
-
 MIDDLEWARE_CLASSES = (
     'django.middleware.gzip.GZipMiddleware',
     'htmlmin.middleware.HtmlMinifyMiddleware',
@@ -118,44 +169,18 @@ MIDDLEWARE_CLASSES = (
     'pagination.middleware.PaginationMiddleware',
 )
 
-ANTIVIRUS_VIRUSTOTAL = 'Sophos'
-
-RESERVED_IP = (
-    '0.0.0.0/8',
-    '10.0.0.0/8',
-    '100.64.0.0/10',
-    '127.0.0.0/8',
-    '169.254.0.0/16',
-    '172.16.0.0/12',
-    '192.0.0.0/24',
-    '192.0.2.0/24',
-    '192.88.99.0/24',
-    '192.168.0.0/16',
-    '198.15.0.0/15',
-    '198.51.100.0/24',
-    '203.0.113.0/24',
-    '224.0.0.0/4',
-    '240.0.0.0/4',
-    '255.255.255.255/32'
-)
-
+# Minimizers and compressors
 HTML_MINIFY = False
-
-ROOT_URLCONF = 'DionaeaFR.urls'
-
-# Python dotted path to the WSGI application used by Django's runserver.
-WSGI_APPLICATION = 'DionaeaFR.wsgi.application'
-
-TEMPLATE_DIRS = (
-    os.path.join(CURRENT_PATH, 'Templates'),
-)
 
 COMPRESS_PRECOMPILERS = (
     ('text/less', 'lessc {infile} {outfile}'),
 )
 
+# A tuple of IP addresses, as strings, that see debug comments, when DEBUG
+# is True and receive X Headers in admindocs if XViewMiddleware is installed
 INTERNAL_IPS = ('127.0.0.1',)
 
+# A tuple of strings designating all applications that are enabled in this Django installation
 INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',

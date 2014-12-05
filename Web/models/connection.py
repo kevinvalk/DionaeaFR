@@ -9,16 +9,10 @@ except ImportError:
     pass
 
 from django.db import models
+from netaddr import IPAddress
 
-
-gi = pygeoip.GeoIP(
-    os.path.join(
-        'DionaeaFR/static',
-        'GeoIP.dat'
-    ),
-    pygeoip.MEMORY_CACHE
-)
-
+gi = pygeoip.GeoIP(settings.GEOIP_COUNTRY_IPV4, pygeoip.MEMORY_CACHE)
+gi6 = pygeoip.GeoIP(settings.GEOIP_COUNTRY_IPV6, pygeoip.MEMORY_CACHE)
 
 class Connection(models.Model):
     connection = models.IntegerField(
@@ -111,9 +105,11 @@ class Connection(models.Model):
     def getCC(self):
         cc = None
         if self.remote_host:
-            cc = gi.country_code_by_addr(
-                self.remote_host
-            )
+            ip = IPAddress(self.remote_host)
+            if ip.version == 4:
+                cc = gi.country_code_by_addr(self.remote_host)
+            elif ip.version == 6:
+                cc = gi6.country_code_by_addr(self.remote_host)
         else:
             cc = "zz"
         if cc:
@@ -125,9 +121,11 @@ class Connection(models.Model):
     def getCountryName(self):
         name = "Unkown"
         if self.remote_host:
-            name = gi.country_name_by_addr(
-                self.remote_host
-            )
+            ip = IPAddress(self.remote_host)
+            if ip.version == 4:
+                cc = gi.country_name_by_addr(self.remote_host)
+            elif ip.version == 6:
+                cc = gi6.country_name_by_addr(self.remote_host)
         return name
 
     @property

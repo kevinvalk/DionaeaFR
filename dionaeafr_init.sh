@@ -5,18 +5,18 @@
 
 . /lib/lsb/init-functions
 
-#BASEDIR="/mnt/hgfs/www/camelot.cudeso.be/cudeso-honeypot/dionaea/DionaeaFR/DionaeaFR"
-BASEDIR="/opt/DionaeaFR/DionaeaFR"
-PIDFILE="/var/run/dionaeafr/dionaeafr.pid"
-LOGFILE="/var/log/dionaeafr/dionaeafr.log"
+BASEDIR="/opt/DionaeaFR"
+PIDFILE="/var/run/dionaeafr.pid"
+LOGFILE="/var/log/dionaeafr.log"
 NAME="dionaeafr"
 DAEMON="dionaeafr"
+IP=127.0.0.1
 PORT=8000
 
 case $1 in
   start)
     cd $BASEDIR
-    python manage.py runserver 0.0.0.0:$PORT > $LOGFILE 2>> $LOGFILE &
+    python manage.py runserver $IP:$PORT > $LOGFILE 2>> $LOGFILE &
     log_daemon_msg "$DAEMON started ..."
     log_end_msg 0
   ;;
@@ -50,6 +50,6 @@ case $1 in
   # For invalid arguments, print the usage message.
   echo "Usage: $0 {start|stop|collectstatic|logs|status}"
   exit 2
-  ;;    
+  ;;
 esac
 
