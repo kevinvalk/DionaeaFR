@@ -19,32 +19,32 @@ Home Dionaea:   http://dionaea.carnivore.it/
 
 [*] Requirements:
 
-	pip install Django
-	pip install pygeoip
-	pip install django-pagination
-	pip install django-tables2
-	pip install django-compressor
-	pip install django-htmlmin
-	pip install django-filter
-	
-	django-tables2-simplefilter:
-		https://github.com/benjiec/django-tables2-simplefilter
-		python setup.py install
-	
-	SubnetTree:
-		git clone git://git.bro-ids.org/pysubnettree.git
-		python setup.py install
-	
-	nodejs:
-		http://nodejs.org/dist/v0.8.16/node-v0.8.16.tar.gz
-		tar xzvf node-v0.8.16.tar.gz
-		cd node-v0.8.16
-		./configure
-		make
-		make install
-	
-	npm install -g less
-	apt-get install python-netaddr
+    pip install Django
+    pip install pygeoip
+    pip install django-pagination
+    pip install django-tables2
+    pip install django-compressor
+    pip install django-htmlmin
+    pip install django-filter
+    
+    django-tables2-simplefilter:
+        https://github.com/benjiec/django-tables2-simplefilter
+        python setup.py install
+    
+    SubnetTree:
+        git clone git://git.bro-ids.org/pysubnettree.git
+        python setup.py install
+    
+    nodejs:
+        http://nodejs.org/dist/v0.8.16/node-v0.8.16.tar.gz
+        tar xzvf node-v0.8.16.tar.gz
+        cd node-v0.8.16
+        ./configure
+        make
+        make install
+    
+    npm install -g less
+    apt-get install python-netaddr
 
 [*] Install
 
@@ -52,21 +52,27 @@ Home Dionaea:   http://dionaea.carnivore.it/
   
     wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCity.dat.gz
     wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCountry/GeoIP.dat.gz
+    wget http://geolite.maxmind.com/download/geoip/database/GeoIPv6.dat.gz
+    wget http://geolite.maxmind.com/download/geoip/database/GeoLiteCityv6-beta/GeoLiteCityv6.dat.gz
 
   Decompress GeoIP and GeoLiteCity:
   
     gunzip GeoLiteCity.dat.gz
     gunzip GeoIP.dat.gz
+    gunzip GeoLiteCityv6.dat.gz
+    gunzip GeoIPv6.dat.gz
 
   Move GeoIP and GeoLiteCity to DionaeaFR/DionaeaFR/static:
   
     mv GeoIP.dat DionaeaFR/DionaeaFR/static
-	mv GeoLiteCity.dat DionaeaFR/DionaeaFR/static
+    mv GeoLiteCity.dat DionaeaFR/DionaeaFR/static
+    mv GeoIPv6.dat DionaeaFR/DionaeaFR/static
+    mv GeoLiteCityv6.dat DionaeaFR/DionaeaFR/static
 
   Run server:
   
-	python manage.py collectstatic
-	python manage.py runserver 0.0.0.0:8000
+    python manage.py collectstatic
+    python manage.py runserver 0.0.0.0:8000
 
   Access to http://YOUR_IP:8000 in browser.
 
@@ -76,25 +82,25 @@ Home Dionaea:   http://dionaea.carnivore.it/
   - Add Attacks graph last 7 days.
   
   29/11/2012
-	- Add less support
-	- Add HTML minify
-	- Add menu icons
-	- Other visuals changes
-	
+    - Add less support
+    - Add HTML minify
+    - Add menu icons
+    - Other visuals changes
+    
   18/12/2012
-	- Add home panel
+    - Add home panel
 
   20/12/2012
-	- Add country name in tooltips
-	- Add Top 10 Ports Graph
-	- Add ANTIVIRUS_VIRUSTOTAL variable in settings.py
-	- Deactive minify by default
-	- Restructure directories
-	- Fixed Graphs
+    - Add country name in tooltips
+    - Add Top 10 Ports Graph
+    - Add ANTIVIRUS_VIRUSTOTAL variable in settings.py
+    - Deactive minify by default
+    - Restructure directories
+    - Fixed Graphs
   
   15/05/2013
     - Refactoring Code
-	- New filters system
+    - New filters system
 
   16/05/2013
     - Fixed mysql_command.
