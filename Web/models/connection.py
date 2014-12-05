@@ -8,6 +8,7 @@ except ImportError:
     print "\tpip install pygeoip"
     pass
 
+from django.conf import settings
 from django.db import models
 from netaddr import IPAddress
 

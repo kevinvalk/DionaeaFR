@@ -53,8 +53,8 @@ def countriesMap(request):
                 except:
                     data[cc] = 1
 
-        except AddrFormatError:
-            # We do nothing when its wrong
+        except:
+            pass
 
     var = "var gdpData = {"
     for country in data:
@@ -90,8 +90,8 @@ def attackersMap(request):
                 counts[c['remote_host']] += 1
             except:
                 counts[c['remote_host']] = 1
-        except AddrFormatError:
-            # We do nothing when its wrong
+        except:
+            pass
 
     for c in counts:
         try:
@@ -108,8 +108,8 @@ def attackersMap(request):
                     counts[c],
                     str(c)
                 )
-        except AddrFormatError:
-            # We do nothing when its wrong
+        except:
+            pass
 
     var = var.rstrip(',') + "];"
     return render_to_response(

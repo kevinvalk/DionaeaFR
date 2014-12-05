@@ -24,10 +24,10 @@ DATABASES = {
 
 # GeoIP settings for IPv4 and IPv6 support
 # Databases can be downloaded from http://dev.maxmind.com/geoip/legacy/geolite/
-GEOIP_COUNTRY_IPV4 = os.path.join(CURRENT_PATH, 'DionaeaFR', 'static', 'GeoIP.dat')
-GEOIP_COUNTRY_IPV6 = os.path.join(CURRENT_PATH, 'DionaeaFR', 'static', 'GeoIPv6.dat')
-GEOIP_CITY_IPV4 = os.path.join(CURRENT_PATH, 'DionaeaFR', 'static', 'GeoLiteCity.dat')
-GEOIP_CITY_IPV6 = os.path.join(CURRENT_PATH, 'DionaeaFR', 'static', 'GeoLiteCityv6.dat')
+GEOIP_COUNTRY_IPV4 = os.path.join(CURRENT_PATH, 'static', 'GeoIP.dat')
+GEOIP_COUNTRY_IPV6 = os.path.join(CURRENT_PATH, 'static', 'GeoIPv6.dat')
+GEOIP_CITY_IPV4 = os.path.join(CURRENT_PATH, 'static', 'GeoLiteCity.dat')
+GEOIP_CITY_IPV6 = os.path.join(CURRENT_PATH, 'static', 'GeoLiteCityv6.dat')
 
 # How many days (going backwards) worth of results to show
 RESULTS_DAYS = 14
@@ -35,26 +35,58 @@ RESULTS_DAYS = 14
 # Virus scanner for virustotal
 ANTIVIRUS_VIRUSTOTAL = 'Sophos'
 
+# Reserved IP addresses taken from http://en.wikipedia.org/wiki/Reserved_IP_addresses
+# These should/could be filtered from our system has they should never access the system
 # Filtered IP's can be given in IPv4 CIDR format or IPv6
-# Examples IPv4: 1.2.3.4/16, 127.0.0.0/8
-# Examples IPv6: ::ffff:0:0/96, 1:2::/32
 RESERVED_IP = (
-    '0.0.0.0/8',
-    '10.0.0.0/8',
-    '100.64.0.0/10',
-    '127.0.0.0/8',
-    '169.254.0.0/16',
-    '172.16.0.0/12',
-    '192.0.0.0/24',
-    '192.0.2.0/24',
-    '192.88.99.0/24',
-    '192.168.0.0/16',
-    '198.15.0.0/15',
-    '198.51.100.0/24',
-    '203.0.113.0/24',
-    '224.0.0.0/4',
-    '240.0.0.0/4',
-    '255.255.255.255/32'
+    # IPv4 reserved space
+    #'0.0.0.0/8',               # Used for broadcast messages to the current ("this") (Disabled because of IPv6 bug, reported)
+    '10.0.0.0/8',               # Used for local communications within a private network
+    '100.64.0.0/10',            # Used for communications between a service provider and its subscribers when using a Carrier-grade NAT
+    '127.0.0.0/8',              # Used for loopback addresses to the local host
+    '169.254.0.0/16',           # Used for link-local addresses between two hosts on a single link when no IP address is otherwise specified
+    '172.16.0.0/12',            # Used for local communications within a private network
+    '192.0.0.0/24',             # Used for the DS-Lite transition mechanism
+    '192.0.2.0/24',             # Assigned as "TEST-NET"
+    '192.88.99.0/24',           # Used by 6to4 anycast relay
+    '192.168.0.0/16',           # Used for local communications within a private network
+    '198.15.0.0/15',            # Used for testing of inter-network communications between two separate subnets
+    '198.51.100.0/24',          # Assigned as "TEST-NET-2"
+    '203.0.113.0/24',           # Assigned as "TEST-NET-3"
+    '224.0.0.0/4',              # Reserved for multicast assignments, 233.252.0.0/24 is assigned as "MCAST-TEST-NET"
+    '240.0.0.0/4',              # Reserved for future use
+    '255.255.255.255/32'        # Reserved for the "limited broadcast" destination address
+    # IPv6 reserved space
+    '::/128'                    # Unspecified address
+    '::1/128'                   # loopback address to the local host.
+    #'::ffff:0:0/96'            # IPv4 mapped addresses (Disabled and redone reserved IPv4 in a mapped IPv6 space)
+    '100::/64'                  # Discard Prefix RFC 6666
+    #'64:ff9b::/96'              # IPv4/IPv6 translation (RFC 6052)
+    '2001::/32'                 # Teredo tunneling
+    '2001:10::/28'              # Deprecated (previously ORCHID)
+    '2001:20::/28'              # ORCHIDv2
+    '2001:db8::/32'             # Addresses used in documentation
+    #'2002::/16'                 # 6to4
+    'fc00::/7'                  # Unique local address
+    'fe80::/10'                 # Link-local address
+    'ff00::/8'                  # Multicast
+    # Inside mapped IPv4 space this is still reserved (BUGGY AS HELL ATM)
+    #'::ffff:0.0.0.0/8',         # Used for broadcast messages to the current ("this") (Disabled because of IPv6 bug, reported)
+    #'::ffff:10.0.0.0/8',        # Used for local communications within a private network
+    #'::ffff:100.64.0.0/10',     # Used for communications between a service provider and its subscribers when using a Carrier-grade NAT
+    #'::ffff:127.0.0.0/8',       # Used for loopback addresses to the local host
+    #'::ffff:169.254.0.0/16',    # Used for link-local addresses between two hosts on a single link when no IP address is otherwise specified
+    #'::ffff:172.16.0.0/12',     # Used for local communications within a private network
+    #'::ffff:192.0.0.0/24',      # Used for the DS-Lite transition mechanism
+    #'::ffff:192.0.2.0/24',      # Assigned as "TEST-NET"
+    #'::ffff:192.88.99.0/24',    # Used by 6to4 anycast relay
+    #'::ffff:192.168.0.0/16',    # Used for local communications within a private network
+    #'::ffff:198.15.0.0/15',     # Used for testing of inter-network communications between two separate subnets
+    #'::ffff:198.51.100.0/24',   # Assigned as "TEST-NET-2"
+    #'::ffff:203.0.113.0/24',    # Assigned as "TEST-NET-3"
+    #'::ffff:224.0.0.0/4',       # Reserved for multicast assignments, 233.252.0.0/24 is assigned as "MCAST-TEST-NET"
+    #'::ffff:240.0.0.0/4',       # Reserved for future use
+    #'::ffff:255.255.255.255/32' # Reserved for the "limited broadcast" destination address
 )
 
 ###################
@@ -63,12 +95,13 @@ RESERVED_IP = (
 # Debug modes
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
+TEST_RUNNER = 'django.test.runner.DiscoverRunner'
 
 # Admin settings
-MANAGERS = ADMINS
 ADMINS = (
     # ('Your Name', 'your_email@example.com'),
 )
+MANAGERS = ADMINS
 
 # Make this unique, and don't share it with anybody.
 SECRET_KEY = 'o*w2sbrhS_LKSQwx_dmlslsdmcx,c,k!(el0^qx5dljbv6eyjwx)(76^wppdjrrxnj%wcny3h2r'
